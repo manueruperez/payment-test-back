@@ -1,4 +1,5 @@
 require 'net/http'
+require 'uri'
 require 'json'
 
 class PaymentsService
@@ -49,5 +50,15 @@ class PaymentsService
     rescue StandardError => e
       return { success: false, message: "Error with payment request: #{e.message}" }
     end
+  end
+
+  def get_token_acceptation()
+
+    uri = URI("#{ENV['PAYMENT_API_SANDBOX']}/merchants/#{ENV['PAYMENT_PUBLIC_SECRET_KEY']}")
+  # Suponiendo que es una petición GET; ajusta según sea necesario
+  response = Net::HTTP.get_response(uri)
+  response = JSON.parse(response.body)
+  acceptance_token = response["data"]["presigned_acceptance"]["acceptance_token"]
+  acceptance_token
   end
 end

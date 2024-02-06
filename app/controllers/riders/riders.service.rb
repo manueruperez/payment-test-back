@@ -4,6 +4,12 @@ $payment_service = PaymentsService.new
 
 
 class RidersService
+    def request_payment_source(params)
+      acceptation_token = $payment_service.get_token_acceptation()
+      puts "#{acceptation_token}"
+      return { status: 400, body: { success: false, message: "User does not have a valid payment method." } }
+
+    end
     def request_ride(params)
       rider_id = params[:rider_id]
       rider = get_rider_by_id(rider_id)
