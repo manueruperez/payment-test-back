@@ -1,5 +1,6 @@
 require 'net/http'
 require 'uri'
+require 'rest-client'
 require 'json'
 
 class PaymentsService
@@ -53,12 +54,27 @@ class PaymentsService
   end
 
   def get_token_acceptation()
-
     uri = URI("#{ENV['PAYMENT_API_SANDBOX']}/merchants/#{ENV['PAYMENT_PUBLIC_SECRET_KEY']}")
-  # Suponiendo que es una petición GET; ajusta según sea necesario
-  response = Net::HTTP.get_response(uri)
-  response = JSON.parse(response.body)
-  acceptance_token = response["data"]["presigned_acceptance"]["acceptance_token"]
-  acceptance_token
+    response = Net::HTTP.get_response(uri)
+    response = JSON.parse(response.body)
+    acceptance_token = response["data"]["presigned_acceptance"]["acceptance_token"]
+    acceptance_token
+  end
+  def create_payment_source(customer_email,token,acceptance_token)
+    url = "https://sandbox.wompi.co/v1/payment_sources"
+  payload = {
+    type: "CARD",
+    token: token,
+    acceptance_token: acceptance_token,
+    customer_email: customer_email,
+  }.to_json
+  puts "response11: #{payload}"
+
+  response = RestClient.post(url, payload, {
+    content_type: :json,
+    accept: :json,
+    authorization: "Bearer prv_test_SedRXry89OGlKjjsNJNOMdFpechLTWsK"
+  })
+  response
   end
 end
