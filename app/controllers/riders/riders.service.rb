@@ -18,7 +18,7 @@ class RidersService
 
       payment_source = $payment_service.create_payment_source(rider[:email], payment_source_token, acceptation_token)
 
-      puts "#{rider[:email]}"
+      puts "#{payment_source}"
       return { status: 400, body: { success: false, message: "User does not have a valid payment method." } }
 
     end

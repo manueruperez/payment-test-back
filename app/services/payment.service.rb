@@ -62,19 +62,18 @@ class PaymentsService
   end
   def create_payment_source(customer_email,token,acceptance_token)
     url = "https://sandbox.wompi.co/v1/payment_sources"
-  payload = {
-    type: "CARD",
-    token: token,
-    acceptance_token: acceptance_token,
-    customer_email: customer_email,
-  }.to_json
-  puts "response11: #{payload}"
+    payload = {
+      type: "CARD",
+      token: token,
+      acceptance_token: acceptance_token,
+      customer_email: customer_email,
+    }.to_json
 
-  response = RestClient.post(url, payload, {
-    content_type: :json,
-    accept: :json,
-    authorization: "Bearer prv_test_SedRXry89OGlKjjsNJNOMdFpechLTWsK"
-  })
-  response
+    response = RestClient.post(url, payload, {
+      content_type: :json,
+      accept: :json,
+      authorization: "Bearer prv_test_SedRXry89OGlKjjsNJNOMdFpechLTWsK"
+    })
+    response
   end
 end
