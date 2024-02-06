@@ -8,17 +8,12 @@ Sequel.migration do
         Float :start_longitude
         Float :end_latitude
         Float :end_longitude
-        Integer :total_amount # Podría ser calculado al finalizar el viaje
+        Integer :total_amount
         String :status, default: 'requested' # Opciones: requested, in_progress, completed
-        DateTime :start_time
-        DateTime :end_time
-        DateTime :created_at
-        DateTime :updated_at
       end
     end
-  
+
     down do
       drop_table(:rides)
     end
   end
-  

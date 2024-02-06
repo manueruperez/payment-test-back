@@ -2,5 +2,6 @@
   "[ruby]": {
     "editor.formatOnSave": true
   },
-  "ruby.format": "rufo"
+  "ruby.format": "rufo",
+  "editor.formatOnSave": false
 }
