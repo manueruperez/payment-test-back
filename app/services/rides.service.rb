@@ -8,7 +8,7 @@ class RidesService
       start_longitude:start_location[:long],
       end_latitude:end_location[:lat],
       end_longitude:end_location[:long],
-      status: 'requested'
+      status: 'in_progress'
     }
     ride_response = Ride.create_ride(ride_data)
     ride_response.values

@@ -16,15 +16,16 @@ class RidersService
         return { status: 400, body: { success: false, message: "No rider found with id #{rider_id} " } }
       end
       acceptation_token = $payment_service.get_token_acceptation()
-      payment_source_token = get_paymentmethod_by_rider_id(rider_id)
+      payment_source_token = get_paymentmethod_token_by_rider_id(rider_id)
       if payment_source_token.nil?
         return { status: 400, body: { success: false, message: "User does not have a valid payment method." } }
       end
 
       payment_source = $payment_service.create_payment_source(rider[:email], payment_source_token, acceptation_token)
+      source_id = payment_source['data']['id']
+      response = PaymentMethod.update_payment_method_source_id(rider_id, source_id)
 
-      puts "#{payment_source}"
-      return { status: 400, body: { success: false, message: "User does not have a valid payment method." } }
+      return { status: 200, body: { success: false, message: "User does not have a valid payment method.", response:  response} }
     end
 
     def request_ride(params)
@@ -43,7 +44,7 @@ class RidersService
         return { status: 400, body: { success: false, message: "No driver founded" } }
       end
 
-      payment_source_token = get_paymentmethod_by_rider_id(rider_id)
+      payment_source_token = get_paymentmethod_token_by_rider_id(rider_id)
       if payment_source_token.nil?
         return { status: 400, body: { success: false, message: "User does not have a valid payment method." } }
       end
@@ -68,8 +69,13 @@ class RidersService
       rider ? rider.values: nil
     end
 
-    def get_paymentmethod_by_rider_id(rider_id)
+    def get_paymentmethod_token_by_rider_id(rider_id)
       payment_method = PaymentMethod.where(rider_id: rider_id).first
       payment_method ? payment_method.payment_source_token : nil
+    end
+
+    def get_paymentmethod_by_rider_id(rider_id)
+      payment_method = PaymentMethod.where(rider_id: rider_id).first
+      payment_method ? payment_method : nil
     end
   end

@@ -34,10 +34,6 @@ class PaymentsService
 
     begin
       response = http.request(request)
-      puts "********************************"
-      puts "request: #{response}"
-      puts "********************************"
-
       if response.code == '200'
         result = JSON.parse(response.body)
         if result['status'] == 'APPROVED'
@@ -60,6 +56,7 @@ class PaymentsService
     acceptance_token = response["data"]["presigned_acceptance"]["acceptance_token"]
     acceptance_token
   end
+
   def create_payment_source(customer_email,token,acceptance_token)
     url = "https://sandbox.wompi.co/v1/payment_sources"
     payload = {
@@ -74,6 +71,86 @@ class PaymentsService
       accept: :json,
       authorization: "Bearer prv_test_SedRXry89OGlKjjsNJNOMdFpechLTWsK"
     })
-    response
+
+    return JSON.parse(response)
   end
+
+  def calculate_amount(meters_distance, speed_km_h = 40)
+    base_rate = 3500
+    cost_per_km = 1000
+    cost_per_minute = 200
+
+    km_distance = meters_distance / 1000.0
+
+    spended_time_hours = km_distance / speed_km_h
+    spended_time_minutes = spended_time_hours * 60
+
+    cost_distance = km_distance * cost_per_km
+    cost_time = spended_time_minutes * cost_per_minute
+
+    importe_total = base_rate + cost_distance + cost_time
+
+    return importe_total
+  end
+
+  def create_transaction(
+    acceptance_token,
+    amount_in_cents,
+    customer_email,
+    token_card,
+    payment_source_id,
+    reference,
+    rider)
+
+    url = "#{ENV['PAYMENT_API_SANDBOX']}/transactions"
+    payload = {
+      acceptance_token: acceptance_token,
+      amount_in_cents: amount_in_cents.round,
+      currency: 'COP',
+      customer_email: customer_email,
+      payment_method: {
+        type: "CARD",
+        token: token_card,
+        installments: 2
+      },
+      payment_source_id: payment_source_id,
+      redirect_url: "https://mitienda.com.co/pago/resultado",
+      reference: reference,
+      customer_data: {
+        phone_number: "573307654321",
+        full_name: rider[:name],
+        legal_id: "1234567890",
+        legal_id_type: "CC"
+      },
+    }.to_json
+    response = RestClient.post(url, payload, {
+      content_type: :json,
+      accept: :json,
+      authorization: "Bearer #{ENV['PAYMENT_PRIVATE_SECRET_KEY']}"
+    })
+    return JSON.parse(response.body)
+  end
+
+  def get_transaction_by_id_transaction(idTransaction)
+    url = "#{ENV['PAYMENT_API_SANDBOX']}/transactions/#{idTransaction}"
+
+    begin
+      response = RestClient.get(url, {
+        accept: :json,
+        authorization: "Bearer #{ENV['PAYMENT_PRIVATE_SECRET_KEY']}" # Asume que usas una variable de entorno para tu clave secreta
+      })
+      transaction = JSON.parse(response.body)
+      return transaction
+    rescue RestClient::ExceptionWithResponse => e
+      # Maneja errores de la petición HTTP, por ejemplo, imprimiendo el código de estado y la respuesta
+      puts "HTTP Request Failed with response code #{e.response.code}"
+      puts e.response.body
+      return nil
+    rescue JSON::ParserError => e
+      # Maneja errores de parseo JSON
+      puts "JSON Parsing Error: #{e.message}"
+      return nil
+    end
+  end
+
 end
