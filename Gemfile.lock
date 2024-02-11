@@ -87,6 +87,7 @@ DEPENDENCIES
   dry-validation
   httparty
   pg
+  rack
   rake
   rest-client
   sequel
