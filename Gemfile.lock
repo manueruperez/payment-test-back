@@ -60,6 +60,9 @@ GEM
       rack (>= 3.0.0, < 4)
     rack-session (2.0.0)
       rack (>= 3.0.0)
+    rackup (2.1.0)
+      rack (>= 3)
+      webrick (~> 1.8)
     rake (13.1.0)
     rest-client (2.1.0)
       http-accept (>= 1.7.0, < 2.0)
@@ -76,6 +79,7 @@ GEM
       rack-session (>= 2.0.0, < 3)
       tilt (~> 2.0)
     tilt (2.3.0)
+    webrick (1.8.1)
     zeitwerk (2.6.12)
 
 PLATFORMS
@@ -88,6 +92,7 @@ DEPENDENCIES
   httparty
   pg
   rack
+  rackup
   rake
   rest-client
   sequel
